@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.generic.OrderType;
 import org.objectquery.generic.ProjectionType;
 import org.objectquery.orientdbobjectquery.domain.Home;
@@ -69,7 +70,7 @@ public class TestSimpleQuery {
 		qp.prj(target, ProjectionType.COUNT);
 		qp.eq(target.getDog().getName(), "tom");
 
-		Assert.assertEquals("select  COUNT(this) from Person where dog.name  =  :dog_name", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
+		Assert.assertEquals("select  COUNT(*) from Person where dog.name  =  :dog_name", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
 
@@ -111,7 +112,7 @@ public class TestSimpleQuery {
 
 	}
 
-	@Test
+	@Test(expected = ObjectQueryException.class)
 	public void testOrderGrouping() {
 
 		GenericObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
@@ -124,7 +125,7 @@ public class TestSimpleQuery {
 
 	}
 
-	@Test
+	@Test(expected = ObjectQueryException.class)
 	public void testOrderGroupingPrj() {
 
 		GenericObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
@@ -166,7 +167,7 @@ public class TestSimpleQuery {
 		qp.in(target.getName(), pars);
 		qp.notIn(target.getName(), pars);
 
-		Assert.assertEquals("select  from Person where name  in  (:name) AND name  not in  (:name1)", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
+		Assert.assertEquals("select  from Person where name  in  :name AND name  not in  :name1", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
 
@@ -179,12 +180,12 @@ public class TestSimpleQuery {
 		qp.contains(target.getFriends(), p);
 		qp.notContains(target.getFriends(), p);
 
-		Assert.assertEquals("select  from Person where :friends  member of  friends AND :friends1  not member of  friends", OrientDBObjectQuery
-				.oriendbGenerator(qp).getQuery());
+		Assert.assertEquals("select  from Person where friends  contains  :friends AND friends  not contains  :friends1",
+				OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
 
-	@Test
+	@Test(expected = ObjectQueryException.class)
 	public void testProjectionGroup() {
 
 		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
@@ -193,7 +194,7 @@ public class TestSimpleQuery {
 		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
 		qp.order(target.getAddress());
 
-		Assert.assertEquals("select address, MAX(price) from Home group by address order by address", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
+		Assert.assertEquals("select address, MAX(price) from Home order by address", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
 

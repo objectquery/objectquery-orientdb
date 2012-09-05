@@ -9,11 +9,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.generic.OrderType;
 import org.objectquery.generic.ProjectionType;
 import org.objectquery.orientdbobjectquery.domain.Home;
 import org.objectquery.orientdbobjectquery.domain.Person;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
 
 public class TestPersistentSelect {
@@ -62,9 +64,9 @@ public class TestPersistentSelect {
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
 		Person target = qp.target();
 		qp.prj(target, ProjectionType.COUNT);
-		List<Object> res = (List<Object>) OrientDBObjectQuery.execute(qp, db);
+		List<ODocument> res = (List<ODocument>) OrientDBObjectQuery.execute(qp, db);
 		Assert.assertEquals(1, res.size());
-		Assert.assertEquals(3L, res.get(0));
+		Assert.assertEquals(3L, res.get(0).field("COUNT"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -75,10 +77,10 @@ public class TestPersistentSelect {
 		qp.prj(target.getName());
 		qp.prj(target.getHome());
 		qp.eq(target.getName(), "tom");
-		List<Object[]> res = (List<Object[]>) OrientDBObjectQuery.execute(qp, db);
+		List<ODocument> res = (List<ODocument>) OrientDBObjectQuery.execute(qp, db);
 		Assert.assertEquals(1, res.size());
-		Assert.assertEquals("tom", res.get(0)[0]);
-		Assert.assertEquals("homeless", ((Home) res.get(0)[1]).getAddress());
+		Assert.assertEquals("tom", res.get(0).field("name"));
+		Assert.assertEquals("homeless", ((ODocument) res.get(0).field("home")).field("address"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -88,11 +90,11 @@ public class TestPersistentSelect {
 		Person target = qp.target();
 		qp.prj(target.getName());
 		qp.order(target.getName());
-		List<Object[]> res = (List<Object[]>) OrientDBObjectQuery.execute(qp, db);
+		List<ODocument> res = (List<ODocument>) OrientDBObjectQuery.execute(qp, db);
 		Assert.assertEquals(3, res.size());
-		Assert.assertEquals("tom", res.get(0));
-		Assert.assertEquals("tomdud", res.get(1));
-		Assert.assertEquals("tommum", res.get(2));
+		Assert.assertEquals("tom", res.get(0).field("name"));
+		Assert.assertEquals("tomdud", res.get(1).field("name"));
+		Assert.assertEquals("tommum", res.get(2).field("name"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -102,11 +104,11 @@ public class TestPersistentSelect {
 		Person target = qp.target();
 		qp.prj(target.getName());
 		qp.order(target.getName(), OrderType.DESC);
-		List<Object[]> res = (List<Object[]>) OrientDBObjectQuery.execute(qp, db);
+		List<ODocument> res = (List<ODocument>) OrientDBObjectQuery.execute(qp, db);
 		Assert.assertEquals(3, res.size());
-		Assert.assertEquals("tommum", res.get(0));
-		Assert.assertEquals("tomdud", res.get(1));
-		Assert.assertEquals("tom", res.get(2));
+		Assert.assertEquals("tommum", (res.get(0)).field("name"));
+		Assert.assertEquals("tomdud", res.get(1).field("name"));
+		Assert.assertEquals("tom", res.get(2).field("name"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -160,12 +162,24 @@ public class TestPersistentSelect {
 		qp.contains(target.getFriends(), p);
 		qp.notContains(target.getFriends(), p);
 
-		List<Object[]> res = (List<Object[]>) OrientDBObjectQuery.execute(qp, db);
+		List<ODocument> res = (List<ODocument>) OrientDBObjectQuery.execute(qp, db);
 		Assert.assertEquals(0, res.size());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void testSelectSimpleFunctionGrouping() {
+
+		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		Home target = qp.target();
+		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
+
+		List<ODocument> res = (List<ODocument>) OrientDBObjectQuery.execute(qp, db);
+		Assert.assertEquals(res.size(), 1);
+		Assert.assertEquals(res.get(0).field("MAX"), 1000000d);
+	}
+	
+	@Test(expected=ObjectQueryException.class)
 	public void testSelectFunctionGrouping() {
 
 		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
@@ -174,15 +188,11 @@ public class TestPersistentSelect {
 		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
 		qp.order(target.getAddress());
 
-		List<Object[]> res = (List<Object[]>) OrientDBObjectQuery.execute(qp, db);
-		Assert.assertEquals(res.size(), 3);
-		Assert.assertEquals(res.get(0)[1], 0d);
-		Assert.assertEquals(res.get(1)[1], 0d);
-		Assert.assertEquals(res.get(2)[1], 1000000d);
+		OrientDBObjectQuery.execute(qp, db);
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test
+	@Test(expected = ObjectQueryException.class)
 	public void testSelectOrderGrouping() {
 
 		GenericObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
@@ -198,7 +208,7 @@ public class TestPersistentSelect {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test
+	@Test(expected = ObjectQueryException.class)
 	public void testSelectOrderGroupingPrj() {
 
 		GenericObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
