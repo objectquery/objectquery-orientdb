@@ -18,6 +18,6 @@ public class OrientDBObjectQuery {
 	@SuppressWarnings("rawtypes")
 	public static Object execute(ObjectQuery<?> query, OObjectDatabaseTx db) {
 		OrientDBQueryGenerator gen = oriendbGenerator(query);
-		return db.query(new OSQLSynchQuery(gen.getQuery()), gen.getParamenters());
+		return db.query(new OSQLSynchQuery(gen.getQuery()), gen.getParameters());
 	}
 }
