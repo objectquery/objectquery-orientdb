@@ -54,6 +54,23 @@
 		<developerConnection>scm:git:git@github.com:objectquery/orientdbobjectquery.git</developerConnection>
 	</scm>
 	<organization>
-		<name>tglman</name>
+		<name>Object Query</name>
+		<url>http://www.objectquery.org</url>
 	</organization>
+
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/objectquery/orientdbobjectquery/issues</url>
+	</issueManagement>
+	<mailingLists>
+		<mailingList>
+			<name>Support</name>
+			<post>https://groups.google.com/group/objectquery</post>
+		</mailingList>
+	</mailingLists>
+	<developers>
+		<developer>
+			<name>tglman</name>
+		</developer>
+	</developers>
 </project>
