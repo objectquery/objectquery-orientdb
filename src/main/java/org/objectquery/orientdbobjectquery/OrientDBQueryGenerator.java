@@ -70,6 +70,10 @@ public class OrientDBQueryGenerator {
 			return " not in ";
 		case NOT_LIKE:
 			return "not like";
+		case LIKE_NOCASE:
+			return "";// TODO:find specific operator
+		case NOT_LIKE_NOCASE:
+			return "";// TODO:find specific operator
 		}
 		return "";
 	}
@@ -116,6 +120,8 @@ public class OrientDBQueryGenerator {
 			return "MIN";
 		case COUNT:
 			return "COUNT";
+		case SUM:
+			return "SUM";
 		}
 		return "";
 	}
@@ -149,7 +155,9 @@ public class OrientDBQueryGenerator {
 			builder.append(" where ");
 			stringfyGroup(query, builder);
 		}
-
+		if (!query.getHavings().isEmpty()) {
+			throw new ObjectQueryException("having clause was not supported by orientdb generator", null);
+		}
 		if (!query.getOrders().isEmpty()) {
 			builder.append(" order by ");
 			Iterator<Order> orders = query.getOrders().iterator();
