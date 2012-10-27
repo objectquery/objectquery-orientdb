@@ -158,7 +158,7 @@ public class TestSimpleQuery {
 
 	}
 
-	@Test
+	@Test(expected=ObjectQueryException.class)
 	public void testINCondition() {
 
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);

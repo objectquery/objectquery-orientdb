@@ -130,7 +130,7 @@ public class TestPersistentSelect {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test
+	@Test(expected=ObjectQueryException.class)
 	public void testSelectINCondition() {
 
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
@@ -146,7 +146,7 @@ public class TestPersistentSelect {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test
+	@Test()
 	public void testSelectContainsCondition() {
 
 		GenericObjectQuery<Person> qp0 = new GenericObjectQuery<Person>(Person.class);
