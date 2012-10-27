@@ -185,7 +185,7 @@ public class TestSimpleQuery {
 
 	}
 
-	@Test(expected = ObjectQueryException.class)
+	@Test()
 	public void testProjectionGroup() {
 
 		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
@@ -194,7 +194,7 @@ public class TestSimpleQuery {
 		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
 		qp.order(target.getAddress());
 
-		Assert.assertEquals("select address, MAX(price) from Home order by address", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
+		Assert.assertEquals("select address, MAX(price) from Home group by address order by address", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
 	@Test(expected = ObjectQueryException.class)

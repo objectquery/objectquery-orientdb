@@ -179,7 +179,7 @@ public class TestPersistentSelect {
 		Assert.assertEquals(res.get(0).field("MAX"), 1000000d);
 	}
 
-	@Test(expected = ObjectQueryException.class)
+	@Test()
 	public void testSelectFunctionGrouping() {
 
 		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
@@ -188,7 +188,11 @@ public class TestPersistentSelect {
 		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
 		qp.order(target.getAddress());
 
-		OrientDBObjectQuery.execute(qp, db);
+		List<ODocument> res = (List<ODocument>) OrientDBObjectQuery.execute(qp, db);
+		Assert.assertEquals(res.size(), 3);
+		Assert.assertEquals(res.get(0).field("MAX"), 0d);
+		Assert.assertEquals(res.get(1).field("MAX"), 0d);
+		Assert.assertEquals(res.get(2).field("MAX"), 1000000d);
 	}
 
 	@SuppressWarnings("unchecked")

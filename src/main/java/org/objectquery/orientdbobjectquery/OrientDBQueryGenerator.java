@@ -1,7 +1,9 @@
 package org.objectquery.orientdbobjectquery;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.objectquery.generic.ConditionElement;
@@ -130,7 +132,8 @@ public class OrientDBQueryGenerator {
 		parameters.clear();
 		StringBuilder builder = new StringBuilder();
 		builder.append("select ");
-		boolean group = false, notgroup = false;
+		boolean group = false;
+		List<Projection> groupby = new ArrayList<Projection>();
 		if (!query.getProjections().isEmpty()) {
 			Iterator<Projection> projections = query.getProjections().iterator();
 			while (projections.hasNext()) {
@@ -138,8 +141,9 @@ public class OrientDBQueryGenerator {
 				if (proj.getType() != null) {
 					builder.append(" ").append(resolveFunction(proj.getType())).append("(");
 					group = true;
-				} else
-					notgroup = true;
+				} else {
+					groupby.add(proj);
+				}
 				buildName(proj.getItem(), builder);
 				if (proj.getType() != null)
 					builder.append(")");
@@ -147,9 +151,6 @@ public class OrientDBQueryGenerator {
 					builder.append(",");
 			}
 		}
-		if (group && notgroup)
-			throw new ObjectQueryException("grouping projection mixed with simple projection are not supported by orientdb query language", null);
-
 		builder.append(" from ").append(clazz.getSimpleName());
 		if (!query.getConditions().isEmpty()) {
 			builder.append(" where ");
@@ -157,6 +158,16 @@ public class OrientDBQueryGenerator {
 		}
 		if (!query.getHavings().isEmpty()) {
 			throw new ObjectQueryException("having clause was not supported by orientdb generator", null);
+		}
+		if (group && !groupby.isEmpty()) {
+			builder.append(" group by ");
+			Iterator<Projection> projections = groupby.iterator();
+			while (projections.hasNext()) {
+				Projection proj = projections.next();
+				buildName(proj.getItem(), builder);
+				if (projections.hasNext())
+					builder.append(",");
+			}
 		}
 		if (!query.getOrders().isEmpty()) {
 			builder.append(" order by ");
