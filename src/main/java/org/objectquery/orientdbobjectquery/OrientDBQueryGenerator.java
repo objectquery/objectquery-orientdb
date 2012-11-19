@@ -53,8 +53,8 @@ public class OrientDBQueryGenerator {
 		case EQUALS:
 			return " = ";
 		case IN:
-			throw new ObjectQueryException("Operator 'in' non supported by oriendb object database", null);
-			//return " in ";
+			//throw new ObjectQueryException("Operator 'in' non supported by oriendb object database", null);
+			return " in ";
 		case LIKE:
 			return " like ";
 		case MAX:
@@ -70,8 +70,8 @@ public class OrientDBQueryGenerator {
 		case NOT_EQUALS:
 			return " <> ";
 		case NOT_IN:
-			throw new ObjectQueryException("Operator 'not in' non supported by oriendb object database", null);
-			//return " not in ";
+			//throw new ObjectQueryException("Operator 'not in' non supported by oriendb object database", null);
+			return " not in ";
 		case NOT_LIKE:
 			return "not like";
 		case LIKE_NOCASE:
