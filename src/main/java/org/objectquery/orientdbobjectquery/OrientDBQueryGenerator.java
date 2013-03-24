@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.objectquery.generic.ConditionElement;
 import org.objectquery.generic.ConditionGroup;
@@ -23,20 +24,28 @@ public class OrientDBQueryGenerator {
 	private Map<String, Object> parameters = new LinkedHashMap<String, Object>();
 	private String query;
 
-	OrientDBQueryGenerator(GenericObjectQuery<?> jpqlObjectQuery) {
-		buildQuery(jpqlObjectQuery.getTargetClass(), (GenericInternalQueryBuilder) jpqlObjectQuery.getBuilder());
+	OrientDBQueryGenerator(GenericObjectQuery<?> objQuery) {
+		parameters.clear();
+		StringBuilder builder = new StringBuilder();
+		if (objQuery.getRootPathItem().getName() != null && !objQuery.getRootPathItem().getName().isEmpty()) {
+			objQuery.getRootPathItem().setName("");
+		}
+		Stack<PathItem> items = new Stack<PathItem>();
+		items.push(objQuery.getRootPathItem());
+		buildQuery(objQuery.getTargetClass(), (GenericInternalQueryBuilder) objQuery.getBuilder(), builder, items);
+		this.query = builder.toString();
 	}
 
-	private void stringfyGroup(ConditionGroup group, StringBuilder builder) {
+	private void stringfyGroup(ConditionGroup group, StringBuilder builder, Stack<PathItem> parent) {
 		if (!group.getConditions().isEmpty()) {
 			Iterator<ConditionElement> eli = group.getConditions().iterator();
 			while (eli.hasNext()) {
 				ConditionElement el = eli.next();
 				if (el instanceof ConditionItem) {
-					stringfyCondition((ConditionItem) el, builder);
+					stringfyCondition((ConditionItem) el, builder, parent);
 				} else if (el instanceof ConditionGroup) {
 					builder.append(" ( ");
-					stringfyGroup((ConditionGroup) el, builder);
+					stringfyGroup((ConditionGroup) el, builder, parent);
 					builder.append(" ) ");
 				}
 				if (eli.hasNext()) {
@@ -53,24 +62,22 @@ public class OrientDBQueryGenerator {
 		case EQUALS:
 			return " = ";
 		case IN:
-			//throw new ObjectQueryException("Operator 'in' non supported by oriendb object database", null);
 			return " in ";
 		case LIKE:
 			return " like ";
-		case MAX:
+		case GREATER:
 			return " > ";
-		case MIN:
+		case LESS:
 			return " < ";
-		case MAX_EQUALS:
+		case GREATER_EQUALS:
 			return " >= ";
-		case MIN_EQUALS:
+		case LESS_EQUALS:
 			return " <= ";
 		case NOT_CONTAINS:
 			return " not contains ";
 		case NOT_EQUALS:
 			return " <> ";
 		case NOT_IN:
-			//throw new ObjectQueryException("Operator 'not in' non supported by oriendb object database", null);
 			return " not in ";
 		case NOT_LIKE:
 			return "not like";
@@ -102,12 +109,14 @@ public class OrientDBQueryGenerator {
 		} while (true);
 	}
 
-	private void stringfyCondition(ConditionItem cond, StringBuilder sb) {
+	private void stringfyCondition(ConditionItem cond, StringBuilder sb, Stack<PathItem> parent) {
 
 		buildName(cond.getItem(), sb);
 		sb.append(" ").append(getConditionType(cond.getType())).append(" ");
 		if (cond.getValue() instanceof PathItem) {
 			buildName((PathItem) cond.getValue(), sb);
+		} else if (cond.getValue() instanceof GenericObjectQuery<?>) {
+			generateSubquery(sb, (GenericObjectQuery<?>) cond.getValue(), parent);
 		} else {
 			sb.append(":");
 			sb.append(buildParameterName(cond));
@@ -130,9 +139,7 @@ public class OrientDBQueryGenerator {
 		return "";
 	}
 
-	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query) {
-		parameters.clear();
-		StringBuilder builder = new StringBuilder();
+	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query, StringBuilder builder, Stack<PathItem> parentItem) {
 		builder.append("select ");
 		boolean group = false;
 		List<Projection> groupby = new ArrayList<Projection>();
@@ -146,7 +153,11 @@ public class OrientDBQueryGenerator {
 				} else {
 					groupby.add(proj);
 				}
-				buildName(proj.getItem(), builder);
+				if (proj.getItem() instanceof PathItem)
+					buildName((PathItem) proj.getItem(), builder);
+				else
+					generateSubquery(builder, (GenericObjectQuery<?>) proj.getItem(), parentItem);
+
 				if (proj.getType() != null)
 					builder.append(")");
 				if (projections.hasNext())
@@ -156,7 +167,7 @@ public class OrientDBQueryGenerator {
 		builder.append(" from ").append(clazz.getSimpleName());
 		if (!query.getConditions().isEmpty()) {
 			builder.append(" where ");
-			stringfyGroup(query, builder);
+			stringfyGroup(query, builder, parentItem);
 		}
 		if (!query.getHavings().isEmpty()) {
 			throw new ObjectQueryException("having clause was not supported by orientdb generator", null);
@@ -166,7 +177,10 @@ public class OrientDBQueryGenerator {
 			Iterator<Projection> projections = groupby.iterator();
 			while (projections.hasNext()) {
 				Projection proj = projections.next();
-				buildName(proj.getItem(), builder);
+				if (proj.getItem() instanceof PathItem)
+					buildName((PathItem) proj.getItem(), builder);
+				else
+					generateSubquery(builder, (GenericObjectQuery<?>) proj.getItem(), parentItem);
 				if (projections.hasNext())
 					builder.append(",");
 			}
@@ -178,7 +192,10 @@ public class OrientDBQueryGenerator {
 				Order ord = orders.next();
 				if (ord.getProjectionType() != null)
 					throw new ObjectQueryException("group operation in order clause is not supported by orientdb query language", null);
-				buildName(ord.getItem(), builder);
+				if (ord.getItem() instanceof PathItem)
+					buildName((PathItem) ord.getItem(), builder);
+				else
+					generateSubquery(builder, (GenericObjectQuery<?>) ord.getItem(), parentItem);
 				if (ord.getType() != null)
 					builder.append(" ").append(ord.getType());
 				if (orders.hasNext())
@@ -186,7 +203,27 @@ public class OrientDBQueryGenerator {
 			}
 		}
 
-		this.query = builder.toString();
+	}
+
+	private void setPaths(Stack<PathItem> parentItem) {
+		StringBuilder pathValue = new StringBuilder();
+		for (PathItem pathItem : parentItem) {
+			pathItem.setName(pathValue.toString());
+			if (pathValue.length() == 0)
+				pathValue.append("$current.parent");
+			else
+				pathValue.append(".parent");
+		}
+	}
+
+	private void generateSubquery(StringBuilder builder, GenericObjectQuery<?> goq, Stack<PathItem> parentItem) {
+		parentItem.push(goq.getRootPathItem());
+		setPaths(parentItem);
+		builder.append("(");
+		buildQuery(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), builder, parentItem);
+		builder.append(")");
+		parentItem.pop().setName("");
+		setPaths(parentItem);
 	}
 
 	private void buildParameterName(ConditionItem conditionItem, StringBuilder builder) {

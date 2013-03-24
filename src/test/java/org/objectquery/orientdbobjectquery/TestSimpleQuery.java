@@ -146,10 +146,10 @@ public class TestSimpleQuery {
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
 		qp.like(target.getName(), "tom");
-		qp.max(target.getName(), "tom");
-		qp.min(target.getName(), "tom");
-		qp.maxEq(target.getName(), "tom");
-		qp.minEq(target.getName(), "tom");
+		qp.gt(target.getName(), "tom");
+		qp.lt(target.getName(), "tom");
+		qp.gtEq(target.getName(), "tom");
+		qp.ltEq(target.getName(), "tom");
 		qp.notEq(target.getName(), "tom");
 
 		Assert.assertEquals(
@@ -197,6 +197,7 @@ public class TestSimpleQuery {
 		Assert.assertEquals("select address, MAX(price) from Home group by address order by address", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
+
 	@Test(expected = ObjectQueryException.class)
 	public void testProjectionGroupHaving() {
 
