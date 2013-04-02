@@ -29,7 +29,7 @@ public class TestPersistentSubQuery {
 
 		ObjectQuery<Person> subQuery = query.subQuery(Person.class);
 		subQuery.eq(subQuery.target().getName(), "tomdud");
-		query.eq(query.target().getDud(), subQuery);
+		query.in(query.target().getDud(), subQuery);
 
 		List<Person> res = (List<Person>) OrientDBObjectQuery.execute(query, db);
 		Assert.assertEquals(1, res.size());

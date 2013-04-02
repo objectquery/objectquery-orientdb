@@ -73,6 +73,9 @@ public class OrientDBTestHelper {
 		tom.setDud(tomDud);
 		tom.setMum(tomMum);
 		tom.setDog(tomDog);
+		tomDud.setDog(tomDog);
+		
+		db.save(tomDud);
 		db.save(tom);
 		db.commit();
 		db.close();

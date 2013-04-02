@@ -1,6 +1,7 @@
 package org.objectquery.orientdbobjectquery;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -207,7 +208,9 @@ public class OrientDBQueryGenerator {
 
 	private void setPaths(Stack<PathItem> parentItem) {
 		StringBuilder pathValue = new StringBuilder();
-		for (PathItem pathItem : parentItem) {
+		List<PathItem> toIterate = new ArrayList<PathItem>(parentItem);
+		Collections.reverse(toIterate);
+		for (PathItem pathItem : toIterate) {
 			pathItem.setName(pathValue.toString());
 			if (pathValue.length() == 0)
 				pathValue.append("$current.parent");
