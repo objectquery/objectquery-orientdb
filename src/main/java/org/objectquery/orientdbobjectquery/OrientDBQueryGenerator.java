@@ -53,7 +53,6 @@ public class OrientDBQueryGenerator {
 		case EQUALS:
 			return " = ";
 		case IN:
-			//throw new ObjectQueryException("Operator 'in' non supported by oriendb object database", null);
 			return " in ";
 		case LIKE:
 			return " like ";
@@ -70,7 +69,6 @@ public class OrientDBQueryGenerator {
 		case NOT_EQUALS:
 			return " <> ";
 		case NOT_IN:
-			//throw new ObjectQueryException("Operator 'not in' non supported by oriendb object database", null);
 			return " not in ";
 		case NOT_LIKE:
 			return "not like";
@@ -78,6 +76,8 @@ public class OrientDBQueryGenerator {
 			return "";// TODO:find specific operator
 		case NOT_LIKE_NOCASE:
 			return "";// TODO:find specific operator
+		case BETWEEN:
+			return " BETWEEN ";
 		}
 		return "";
 	}
@@ -88,14 +88,14 @@ public class OrientDBQueryGenerator {
 		GenericInternalQueryBuilder.buildPath(item, sb);
 	}
 
-	private String buildParameterName(ConditionItem cond) {
+	private String buildParameterName(ConditionItem cond, Object value) {
 		StringBuilder name = new StringBuilder();
 		buildParameterName(cond, name);
 		int i = 1;
 		String realName = name.toString();
 		do {
 			if (!parameters.containsKey(realName)) {
-				parameters.put(realName, cond.getValue());
+				parameters.put(realName, value);
 				return realName;
 			}
 			realName = name.toString() + i++;
@@ -110,7 +110,16 @@ public class OrientDBQueryGenerator {
 			buildName((PathItem) cond.getValue(), sb);
 		} else {
 			sb.append(":");
-			sb.append(buildParameterName(cond));
+			sb.append(buildParameterName(cond, cond.getValue()));
+		}
+		if (cond.getType().equals(ConditionType.BETWEEN)) {
+			sb.append(" AND ");
+			if (cond.getValueTo() instanceof PathItem) {
+				buildName((PathItem) cond.getValueTo(), sb);
+			} else {
+				sb.append(":");
+				sb.append(buildParameterName(cond, cond.getValue()));
+			}
 		}
 	}
 

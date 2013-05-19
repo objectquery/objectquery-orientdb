@@ -1,5 +1,7 @@
 package org.objectquery.orientdbobjectquery;
 
+import java.util.List;
+
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.ObjectQueryException;
@@ -16,7 +18,7 @@ public class OrientDBObjectQuery {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static Object execute(ObjectQuery<?> query, OObjectDatabaseTx db) {
+	public static <RET extends List<?>> RET execute(ObjectQuery<?> query, OObjectDatabaseTx db) {
 		OrientDBQueryGenerator gen = oriendbGenerator(query);
 		return db.query(new OSQLSynchQuery(gen.getQuery()), gen.getParameters());
 	}
