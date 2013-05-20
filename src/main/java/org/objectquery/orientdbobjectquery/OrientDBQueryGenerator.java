@@ -118,7 +118,7 @@ public class OrientDBQueryGenerator {
 				buildName((PathItem) cond.getValueTo(), sb);
 			} else {
 				sb.append(":");
-				sb.append(buildParameterName(cond, cond.getValue()));
+				sb.append(buildParameterName(cond, cond.getValueTo()));
 			}
 		}
 	}
