@@ -13,7 +13,7 @@ public class Home {
 	private int weight;
 	private double price;
 	@OVersion
-	private long version;
+	private Long version;
 
 	public Long getId() {
 		return id;
@@ -55,11 +55,11 @@ public class Home {
 		this.price = price;
 	}
 
-	public long getVersion() {
+	public Long getVersion() {
 		return version;
 	}
 
-	public void setVersion(long version) {
+	public void setVersion(Long version) {
 		this.version = version;
 	}
 

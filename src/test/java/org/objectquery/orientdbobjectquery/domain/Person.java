@@ -13,7 +13,7 @@ public class Person {
 	private Home home;
 	private Dog dog;
 	@OVersion
-	private long version;
+	private Long version;
 
 	public Long getId() {
 		return id;
@@ -71,11 +71,11 @@ public class Person {
 		this.dog = dog;
 	}
 
-	public long getVersion() {
+	public Long getVersion() {
 		return version;
 	}
 
-	public void setVersion(long version) {
+	public void setVersion(Long version) {
 		this.version = version;
 	}
 }
