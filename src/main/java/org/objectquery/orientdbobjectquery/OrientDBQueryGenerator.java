@@ -14,6 +14,7 @@ import org.objectquery.generic.ConditionItem;
 import org.objectquery.generic.ConditionType;
 import org.objectquery.generic.GenericInternalQueryBuilder;
 import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.generic.Join;
 import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.generic.Order;
 import org.objectquery.generic.PathItem;
@@ -33,7 +34,7 @@ public class OrientDBQueryGenerator {
 		}
 		Stack<PathItem> items = new Stack<PathItem>();
 		items.push(objQuery.getRootPathItem());
-		buildQuery(objQuery.getTargetClass(), (GenericInternalQueryBuilder) objQuery.getBuilder(), builder, items);
+		buildQuery(objQuery.getTargetClass(), (GenericInternalQueryBuilder) objQuery.getBuilder(), objQuery.getJoins(), builder, items);
 		this.query = builder.toString();
 	}
 
@@ -140,7 +141,7 @@ public class OrientDBQueryGenerator {
 		return "";
 	}
 
-	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query, StringBuilder builder, Stack<PathItem> parentItem) {
+	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query, List<Join> joins, StringBuilder builder, Stack<PathItem> parentItem) {
 		builder.append("select ");
 		boolean group = false;
 		List<Projection> groupby = new ArrayList<Projection>();
@@ -166,6 +167,9 @@ public class OrientDBQueryGenerator {
 			}
 		}
 		builder.append(" from ").append(clazz.getSimpleName());
+		if (!joins.isEmpty())
+			throw new ObjectQueryException("join are not supported by orientdb generator", null);
+
 		if (!query.getConditions().isEmpty()) {
 			builder.append(" where ");
 			stringfyGroup(query, builder, parentItem);
@@ -223,7 +227,7 @@ public class OrientDBQueryGenerator {
 		parentItem.push(goq.getRootPathItem());
 		setPaths(parentItem);
 		builder.append("(");
-		buildQuery(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), builder, parentItem);
+		buildQuery(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), goq.getJoins(), builder, parentItem);
 		builder.append(")");
 		parentItem.pop().setName("");
 		setPaths(parentItem);

@@ -213,4 +213,14 @@ public class TestSimpleQuery {
 				OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
+
+	@Test(expected = ObjectQueryException.class)
+	public void testJoin() {
+
+		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		qp.join(Person.class);
+		OrientDBObjectQuery.oriendbGenerator(qp);
+
+	}
+
 }
