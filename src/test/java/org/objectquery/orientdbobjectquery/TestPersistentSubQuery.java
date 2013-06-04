@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.orientdbobjectquery.domain.Dog;
 import org.objectquery.orientdbobjectquery.domain.Person;
 
@@ -22,7 +23,7 @@ public class TestPersistentSubQuery {
 		db.begin();
 	}
 
-	@Test
+	@Test(expected=ObjectQueryException.class)
 	@SuppressWarnings("unchecked")
 	public void testSubquerySimple() {
 		ObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
@@ -36,7 +37,7 @@ public class TestPersistentSubQuery {
 		Assert.assertEquals(res.get(0).getName(), "tom");
 	}
 
-	@Test
+	@Test(expected=ObjectQueryException.class)
 	@SuppressWarnings("unchecked")
 	public void testBackReferenceSubquery() {
 		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
@@ -51,7 +52,7 @@ public class TestPersistentSubQuery {
 		Assert.assertEquals(res.get(0).getName(), "tom");
 	}
 
-	@Test
+	@Test(expected=ObjectQueryException.class)
 	@SuppressWarnings("unchecked")
 	public void testDoubleSubQuery() {
 
@@ -72,7 +73,7 @@ public class TestPersistentSubQuery {
 
 	}
 
-	@Test
+	@Test(expected=ObjectQueryException.class)
 	@SuppressWarnings("unchecked")
 	public void testMultipleReferenceSubquery() {
 		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);

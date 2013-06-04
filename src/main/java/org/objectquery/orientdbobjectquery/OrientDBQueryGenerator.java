@@ -224,6 +224,7 @@ public class OrientDBQueryGenerator {
 	}
 
 	private void generateSubquery(StringBuilder builder, GenericObjectQuery<?> goq, Stack<PathItem> parentItem) {
+		/*
 		parentItem.push(goq.getRootPathItem());
 		setPaths(parentItem);
 		builder.append("(");
@@ -231,6 +232,8 @@ public class OrientDBQueryGenerator {
 		builder.append(")");
 		parentItem.pop().setName("");
 		setPaths(parentItem);
+		*/
+		throw new ObjectQueryException("Unsupported subquery on orientdb implementation");
 	}
 
 	private void buildParameterName(ConditionItem conditionItem, StringBuilder builder) {

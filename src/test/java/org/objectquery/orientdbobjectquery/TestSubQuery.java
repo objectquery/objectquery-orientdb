@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.orientdbobjectquery.domain.Person;
 
 public class TestSubQuery {
@@ -12,7 +13,7 @@ public class TestSubQuery {
 		return OrientDBObjectQuery.oriendbGenerator(query).getQuery();
 	}
 
-	@Test
+	@Test(expected=ObjectQueryException.class)
 	public void testSubquerySimple() {
 		ObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
 
@@ -26,7 +27,7 @@ public class TestSubQuery {
 
 	}
 
-	@Test
+	@Test(expected=ObjectQueryException.class)
 	public void testBackReferenceSubquery() {
 		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
 		Person target = query.target();
@@ -39,7 +40,7 @@ public class TestSubQuery {
 				getQueryString(query));
 	}
 
-	@Test
+	@Test(expected=ObjectQueryException.class)
 	public void testDoubleSubQuery() {
 
 		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
@@ -59,7 +60,7 @@ public class TestSubQuery {
 
 	}
 
-	@Test
+	@Test(expected=ObjectQueryException.class)
 	public void testMultipleReferenceSubquery() {
 		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
 		Person target = query.target();
