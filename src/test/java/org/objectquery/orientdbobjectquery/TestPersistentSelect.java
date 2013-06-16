@@ -179,6 +179,7 @@ public class TestPersistentSelect {
 		Assert.assertEquals(res.get(0).field("MAX"), 1000000d);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test()
 	public void testSelectFunctionGrouping() {
 
@@ -240,6 +241,18 @@ public class TestPersistentSelect {
 		List<Object[]> res = (List<Object[]>) OrientDBObjectQuery.execute(qp, db);
 		Assert.assertEquals(1, res.size());
 		Assert.assertEquals((Double) res.get(0)[1], 1000000d, 0);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testSelectBetweenCondition() {
+		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		Home target = qp.target();
+		qp.between(qp.box(target.getPrice()), 100000D, 2000000D);
+
+		List<Home> res = (List<Home>) OrientDBObjectQuery.execute(qp, db);
+		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(res.get(0).getPrice(), 1000000d, 0);
 	}
 
 	@After

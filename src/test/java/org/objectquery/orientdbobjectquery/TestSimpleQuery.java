@@ -208,8 +208,7 @@ public class TestSimpleQuery {
 		qp.order(target.getAddress());
 		qp.having(qp.box(target.getPrice()), ProjectionType.MAX).eq(0D);
 
-		Assert.assertEquals(
-				"select A.address, MAX(A.price) from org.objectquery.jdoobjectquery.domain.Home A group by A.address having MAX(A.price) = :price order by A.address",
+		Assert.assertEquals("select A.address, MAX(A.price) from Home A group by A.address having MAX(A.price) = :price order by A.address",
 				OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
@@ -223,4 +222,13 @@ public class TestSimpleQuery {
 
 	}
 
+	@Test
+	public void testBetweenCondition() {
+		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		Home target = qp.target();
+		qp.between(qp.box(target.getPrice()), 20D, 30D);
+
+		Assert.assertEquals("select  from Home where price  BETWEEN  :price AND :price1", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
+
+	}
 }
