@@ -1,4 +1,4 @@
-package org.objectquery.orientdbobjectquery;
+package org.objectquery.orientdb;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +12,9 @@ import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.generic.OrderType;
 import org.objectquery.generic.ProjectionType;
-import org.objectquery.orientdbobjectquery.domain.Home;
-import org.objectquery.orientdbobjectquery.domain.Person;
+import org.objectquery.orientdb.OrientDBObjectQuery;
+import org.objectquery.orientdb.domain.Home;
+import org.objectquery.orientdb.domain.Person;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.object.db.OObjectDatabaseTx;

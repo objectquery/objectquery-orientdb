@@ -1,4 +1,4 @@
-package org.objectquery.orientdbobjectquery.domain;
+package org.objectquery.orientdb.domain;
 
 import com.orientechnologies.orient.core.annotation.OVersion;
 

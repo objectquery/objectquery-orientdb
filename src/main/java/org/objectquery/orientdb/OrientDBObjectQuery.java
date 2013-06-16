@@ -1,4 +1,4 @@
-package org.objectquery.orientdbobjectquery;
+package org.objectquery.orientdb;
 
 import java.util.List;
 

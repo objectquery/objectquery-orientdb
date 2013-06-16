@@ -1,11 +1,12 @@
-package org.objectquery.orientdbobjectquery;
+package org.objectquery.orientdb;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.ObjectQueryException;
-import org.objectquery.orientdbobjectquery.domain.Person;
+import org.objectquery.orientdb.OrientDBObjectQuery;
+import org.objectquery.orientdb.domain.Person;
 
 public class TestSubQuery {
 

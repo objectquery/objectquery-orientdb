@@ -1,9 +1,9 @@
-package org.objectquery.orientdbobjectquery;
+package org.objectquery.orientdb;
 
-import org.objectquery.orientdbobjectquery.domain.Dog;
-import org.objectquery.orientdbobjectquery.domain.Home;
-import org.objectquery.orientdbobjectquery.domain.Home.HomeType;
-import org.objectquery.orientdbobjectquery.domain.Person;
+import org.objectquery.orientdb.domain.Dog;
+import org.objectquery.orientdb.domain.Home;
+import org.objectquery.orientdb.domain.Person;
+import org.objectquery.orientdb.domain.Home.HomeType;
 
 import com.orientechnologies.orient.object.db.OObjectDatabasePool;
 import com.orientechnologies.orient.object.db.OObjectDatabaseTx;

@@ -1,4 +1,4 @@
-package org.objectquery.orientdbobjectquery;
+package org.objectquery.orientdb;
 
 import java.util.List;
 
@@ -8,8 +8,9 @@ import org.junit.Test;
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.ObjectQueryException;
-import org.objectquery.orientdbobjectquery.domain.Dog;
-import org.objectquery.orientdbobjectquery.domain.Person;
+import org.objectquery.orientdb.OrientDBObjectQuery;
+import org.objectquery.orientdb.domain.Dog;
+import org.objectquery.orientdb.domain.Person;
 
 import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
 
