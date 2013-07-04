@@ -47,7 +47,7 @@ public class TestSimpleQuery {
 		qp.eq(target.getDog().getName(), "tom");
 		qp.eq(target.getDud().getName(), "tom3");
 
-		Assert.assertEquals("select  from Person where dog.name  =  :dog_name AND dud.name  =  :dud_name", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
+		Assert.assertEquals("select  from Person where dog.name  =  :dogname AND dud.name  =  :dudname", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
 
@@ -59,7 +59,7 @@ public class TestSimpleQuery {
 		qp.prj(target.getName());
 		qp.eq(target.getDog().getName(), "tom");
 
-		Assert.assertEquals("select name from Person where dog.name  =  :dog_name", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
+		Assert.assertEquals("select name from Person where dog.name  =  :dogname", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
 
@@ -71,7 +71,7 @@ public class TestSimpleQuery {
 		qp.prj(target, ProjectionType.COUNT);
 		qp.eq(target.getDog().getName(), "tom");
 
-		Assert.assertEquals("select  COUNT(*) from Person where dog.name  =  :dog_name", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
+		Assert.assertEquals("select  COUNT(*) from Person where dog.name  =  :dogname", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
 
@@ -83,7 +83,7 @@ public class TestSimpleQuery {
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName());
 
-		Assert.assertEquals("select  from Person where dog.name  =  :dog_name order by name", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
+		Assert.assertEquals("select  from Person where dog.name  =  :dogname order by name", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
 
@@ -95,7 +95,7 @@ public class TestSimpleQuery {
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName(), OrderType.ASC);
 
-		Assert.assertEquals("select  from Person where dog.name  =  :dog_name order by name ASC", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
+		Assert.assertEquals("select  from Person where dog.name  =  :dogname order by name ASC", OrientDBObjectQuery.oriendbGenerator(qp).getQuery());
 
 	}
 
@@ -108,7 +108,7 @@ public class TestSimpleQuery {
 		qp.order(target.getName(), OrderType.DESC);
 		qp.order(target.getDog().getName(), OrderType.DESC);
 
-		Assert.assertEquals("select  from Person where dog.name  =  :dog_name order by name DESC,dog.name DESC", OrientDBObjectQuery.oriendbGenerator(qp)
+		Assert.assertEquals("select  from Person where dog.name  =  :dogname order by name DESC,dog.name DESC", OrientDBObjectQuery.oriendbGenerator(qp)
 				.getQuery());
 
 	}

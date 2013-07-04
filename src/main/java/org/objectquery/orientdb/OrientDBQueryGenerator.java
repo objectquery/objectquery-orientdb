@@ -248,7 +248,7 @@ public class OrientDBQueryGenerator {
 	}
 
 	private void buildParameterName(ConditionItem conditionItem, StringBuilder builder) {
-		GenericInternalQueryBuilder.buildPath(conditionItem.getItem(), builder, "_");
+		GenericInternalQueryBuilder.buildPath(conditionItem.getItem(), builder, "");
 	}
 
 	public Map<String, Object> getParameters() {

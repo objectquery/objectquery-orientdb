@@ -61,6 +61,17 @@ public class TestPersistentSelect {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void testSelectPathParam() {
+		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		qp.eq(target.getDud().getName(), "tomdud");
+		List<Person> res = (List<Person>) OrientDBObjectQuery.execute(qp, db);
+		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(res.get(0).getDud().getName(), "tomdud");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void testSelectCountThis() {
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
 		Person target = qp.target();
