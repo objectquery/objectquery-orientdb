@@ -7,9 +7,9 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.objectquery.ObjectQuery;
+import org.objectquery.SelectQuery;
 import org.objectquery.UpdateQuery;
-import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.generic.GenericSelectQuery;
 import org.objectquery.generic.GenericUpdateQuery;
 import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.orientdb.domain.Home;
@@ -34,7 +34,7 @@ public class TestUpdateQuery {
 		other.setText("old-address");
 		db.save(other);
 
-		ObjectQuery<Other> q = new GenericObjectQuery<Other>(Other.class);
+		SelectQuery<Other> q = new GenericSelectQuery<Other>(Other.class);
 		q.eq(q.target().getText(), "old-address");
 		List<Other> ots = OrientDBObjectQuery.execute(q, db);
 		Assert.assertFalse(ots.isEmpty());

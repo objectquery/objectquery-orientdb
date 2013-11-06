@@ -5,7 +5,7 @@ import java.util.List;
 import org.objectquery.BaseQuery;
 import org.objectquery.DeleteQuery;
 import org.objectquery.InsertQuery;
-import org.objectquery.ObjectQuery;
+import org.objectquery.SelectQuery;
 import org.objectquery.UpdateQuery;
 import org.objectquery.generic.GenericBaseQuery;
 import org.objectquery.generic.ObjectQueryException;
@@ -23,7 +23,7 @@ public class OrientDBObjectQuery {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static <RET extends List<?>> RET execute(ObjectQuery<?> query, OObjectDatabaseTx db) {
+	public static <RET extends List<?>> RET execute(SelectQuery<?> query, OObjectDatabaseTx db) {
 		OrientDBQueryGenerator gen = orientdbGenerator(query);
 		return db.query(new OSQLSynchQuery(gen.getQuery()), gen.getParameters());
 	}
@@ -40,10 +40,8 @@ public class OrientDBObjectQuery {
 		return db.command(new OCommandSQL(gen.getQuery())).execute(gen.getParameters());
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static int execute(DeleteQuery<?> query, OObjectDatabaseTx db) {
 		OrientDBQueryGenerator gen = orientdbGenerator(query);
-		// gen.getParameters()
 		return db.command(new OCommandSQL(gen.getQuery())).execute(gen.getParameters());
 	}
 }
