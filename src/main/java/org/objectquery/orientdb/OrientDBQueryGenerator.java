@@ -12,6 +12,7 @@ import org.objectquery.generic.ConditionElement;
 import org.objectquery.generic.ConditionGroup;
 import org.objectquery.generic.ConditionItem;
 import org.objectquery.generic.ConditionType;
+import org.objectquery.generic.GenericBaseQuery;
 import org.objectquery.generic.GenericInternalQueryBuilder;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.Join;
@@ -20,21 +21,96 @@ import org.objectquery.generic.Order;
 import org.objectquery.generic.PathItem;
 import org.objectquery.generic.Projection;
 import org.objectquery.generic.ProjectionType;
+import org.objectquery.generic.SetValue;
 
 public class OrientDBQueryGenerator {
 
 	private Map<String, Object> parameters = new LinkedHashMap<String, Object>();
 	private String query;
 
-	OrientDBQueryGenerator(GenericObjectQuery<?> objQuery) {
+	OrientDBQueryGenerator(GenericBaseQuery<?> baseQuery) {
 		parameters.clear();
-		StringBuilder builder = new StringBuilder();
-		if (objQuery.getRootPathItem().getName() != null && !objQuery.getRootPathItem().getName().isEmpty()) {
-			objQuery.getRootPathItem().setName("");
+		GenericInternalQueryBuilder builder1 = (GenericInternalQueryBuilder) baseQuery.getBuilder();
+		switch (builder1.getQueryType()) {
+		case SELECT:
+			if (baseQuery.getRootPathItem().getName() != null && !baseQuery.getRootPathItem().getName().isEmpty()) {
+				baseQuery.getRootPathItem().setName("");
+			}
+			Stack<PathItem> items = new Stack<PathItem>();
+			items.push(baseQuery.getRootPathItem());
+			if (baseQuery instanceof GenericObjectQuery<?>)
+				buildQuery(baseQuery.getTargetClass(), builder1, ((GenericObjectQuery<?>) baseQuery).getJoins(), items);
+			break;
+		case DELETE:
+			buildDelete(baseQuery.getTargetClass(), builder1, baseQuery.getRootPathItem());
+			break;
+
+		case INSERT:
+			buildInsert(baseQuery.getTargetClass(), builder1);
+			break;
+
+		case UPDATE:
+			buildUpdate(baseQuery.getTargetClass(), builder1, baseQuery.getRootPathItem());
+			break;
+
+		default:
+			break;
 		}
-		Stack<PathItem> items = new Stack<PathItem>();
-		items.push(objQuery.getRootPathItem());
-		buildQuery(objQuery.getTargetClass(), (GenericInternalQueryBuilder) objQuery.getBuilder(), objQuery.getJoins(), builder, items);
+
+	}
+
+	private void buildInsert(Class<?> targetClass, GenericInternalQueryBuilder query) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("insert into ").append(targetClass.getSimpleName()).append(" (");
+		StringBuilder values = new StringBuilder(")values(");
+		if (!query.getSets().isEmpty()) {
+			Iterator<SetValue> iter = query.getSets().iterator();
+			while (iter.hasNext()) {
+				SetValue set = iter.next();
+				buildName(set.getTarget(), builder);
+				values.append(":").append(buildParameterName(set.getTarget(), set.getValue()));
+				if (iter.hasNext()) {
+					builder.append(",");
+					values.append(",");
+				}
+			}
+		}
+		this.query = builder.append(values).append(")").toString();
+	}
+
+	private void buildUpdate(Class<?> targetClass, GenericInternalQueryBuilder query, PathItem pathItem) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("update ").append(targetClass.getSimpleName()).append(" set ");
+		if (!query.getSets().isEmpty()) {
+			Iterator<SetValue> iter = query.getSets().iterator();
+			while (iter.hasNext()) {
+				SetValue set = iter.next();
+				if (set.getTarget().getParent().getParent() != null)
+					throw new ObjectQueryException("Not Supported nested field update in oriendb ");
+				buildName(set.getTarget(), builder);
+				builder.append(" = ").append(":").append(buildParameterName(set.getTarget(), set.getValue()));
+				if (iter.hasNext())
+					builder.append(",");
+			}
+		}
+		if (!query.getConditions().isEmpty()) {
+			builder.append(" where ");
+			Stack<PathItem> items = new Stack<PathItem>();
+			items.push(pathItem);
+			stringfyGroup(query, builder, items);
+		}
+		this.query = builder.toString();
+	}
+
+	private void buildDelete(Class<?> targetClass, GenericInternalQueryBuilder query, PathItem pathItem) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("delete from ").append(targetClass.getSimpleName()).append(" ");
+		if (!query.getConditions().isEmpty()) {
+			builder.append(" where ");
+			Stack<PathItem> items = new Stack<PathItem>();
+			items.push(pathItem);
+			stringfyGroup(query, builder, items);
+		}
 		this.query = builder.toString();
 	}
 
@@ -100,8 +176,12 @@ public class OrientDBQueryGenerator {
 	}
 
 	private String buildParameterName(ConditionItem cond, Object value) {
+		return buildParameterName(cond.getItem(), value);
+	}
+
+	private String buildParameterName(PathItem item, Object value) {
 		StringBuilder name = new StringBuilder();
-		buildParameterName(cond, name);
+		GenericInternalQueryBuilder.buildPath(item, name, "");
 		int i = 1;
 		String realName = name.toString();
 		do {
@@ -152,7 +232,8 @@ public class OrientDBQueryGenerator {
 		return "";
 	}
 
-	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query, List<Join> joins, StringBuilder builder, Stack<PathItem> parentItem) {
+	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query, List<Join> joins, Stack<PathItem> parentItem) {
+		StringBuilder builder = new StringBuilder();
 		builder.append("select ");
 		boolean group = false;
 		List<Projection> groupby = new ArrayList<Projection>();
@@ -218,7 +299,7 @@ public class OrientDBQueryGenerator {
 					builder.append(',');
 			}
 		}
-
+		this.query = builder.toString();
 	}
 
 	private void setPaths(Stack<PathItem> parentItem) {
@@ -245,10 +326,6 @@ public class OrientDBQueryGenerator {
 		setPaths(parentItem);
 		*/
 		throw new ObjectQueryException("Unsupported subquery on orientdb implementation");
-	}
-
-	private void buildParameterName(ConditionItem conditionItem, StringBuilder builder) {
-		GenericInternalQueryBuilder.buildPath(conditionItem.getItem(), builder, "");
 	}
 
 	public Map<String, Object> getParameters() {

@@ -5,13 +5,12 @@ import org.junit.Test;
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.ObjectQueryException;
-import org.objectquery.orientdb.OrientDBObjectQuery;
 import org.objectquery.orientdb.domain.Person;
 
 public class TestSubQuery {
 
 	private static String getQueryString(ObjectQuery<Person> query) {
-		return OrientDBObjectQuery.oriendbGenerator(query).getQuery();
+		return OrientDBObjectQuery.orientdbGenerator(query).getQuery();
 	}
 
 	@Test(expected=ObjectQueryException.class)

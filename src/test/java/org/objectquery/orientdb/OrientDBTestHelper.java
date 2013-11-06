@@ -2,8 +2,9 @@ package org.objectquery.orientdb;
 
 import org.objectquery.orientdb.domain.Dog;
 import org.objectquery.orientdb.domain.Home;
-import org.objectquery.orientdb.domain.Person;
 import org.objectquery.orientdb.domain.Home.HomeType;
+import org.objectquery.orientdb.domain.Other;
+import org.objectquery.orientdb.domain.Person;
 
 import com.orientechnologies.orient.object.db.OObjectDatabasePool;
 import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
@@ -28,6 +29,7 @@ public class OrientDBTestHelper {
 		db.getEntityManager().registerEntityClass(HomeType.class);
 		db.getEntityManager().registerEntityClass(Dog.class);
 		db.getEntityManager().registerEntityClass(Person.class);
+		db.getEntityManager().registerEntityClass(Other.class);
 		db.begin();
 
 		Home tomHome = new Home();

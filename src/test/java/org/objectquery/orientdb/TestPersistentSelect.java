@@ -12,7 +12,6 @@ import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.generic.OrderType;
 import org.objectquery.generic.ProjectionType;
-import org.objectquery.orientdb.OrientDBObjectQuery;
 import org.objectquery.orientdb.domain.Home;
 import org.objectquery.orientdb.domain.Person;
 

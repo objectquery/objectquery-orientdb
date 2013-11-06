@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.ObjectQueryException;
-import org.objectquery.orientdb.OrientDBObjectQuery;
 import org.objectquery.orientdb.domain.Dog;
 import org.objectquery.orientdb.domain.Person;
 
