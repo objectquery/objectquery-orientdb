@@ -14,26 +14,22 @@ public class OrientDBQueryEngine extends QueryEngine<OObjectDatabaseTx> {
 
 	@Override
 	public <RET extends List<?>> RET execute(SelectQuery<?> query, OObjectDatabaseTx engineSession) {
-		// TODO Auto-generated method stub
-		return null;
+		return OrientDBObjectQuery.execute(query, engineSession);
 	}
 
 	@Override
 	public int execute(DeleteQuery<?> dq, OObjectDatabaseTx engineSession) {
-		// TODO Auto-generated method stub
-		return 0;
+		return OrientDBObjectQuery.execute(dq, engineSession);
 	}
 
 	@Override
 	public boolean execute(InsertQuery<?> ip, OObjectDatabaseTx engineSession) {
-		// TODO Auto-generated method stub
-		return false;
+		return OrientDBObjectQuery.execute(ip, engineSession);
 	}
 
 	@Override
 	public int execute(UpdateQuery<?> query, OObjectDatabaseTx engineSession) {
-		// TODO Auto-generated method stub
-		return 0;
+		return OrientDBObjectQuery.execute(query, engineSession);
 	}
 
 }

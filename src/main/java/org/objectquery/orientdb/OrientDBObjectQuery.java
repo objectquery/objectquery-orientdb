@@ -28,16 +28,14 @@ public class OrientDBObjectQuery {
 		return db.query(new OSQLSynchQuery(gen.getQuery()), gen.getParameters());
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static <RET> RET execute(UpdateQuery<?> query, OObjectDatabaseTx db) {
+	public static int execute(UpdateQuery<?> query, OObjectDatabaseTx db) {
 		OrientDBQueryGenerator gen = orientdbGenerator(query);
 		return db.command(new OCommandSQL(gen.getQuery())).execute(gen.getParameters());
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static <RET> RET execute(InsertQuery<?> query, OObjectDatabaseTx db) {
+	public static boolean execute(InsertQuery<?> query, OObjectDatabaseTx db) {
 		OrientDBQueryGenerator gen = orientdbGenerator(query);
-		return db.command(new OCommandSQL(gen.getQuery())).execute(gen.getParameters());
+		return db.command(new OCommandSQL(gen.getQuery())).execute(gen.getParameters()) != null;
 	}
 
 	public static int execute(DeleteQuery<?> query, OObjectDatabaseTx db) {

@@ -43,8 +43,8 @@ public class TestInsertQuery {
 		InsertQuery<Home> ip = new GenericInsertQuery<Home>(Home.class);
 		ip.set(ip.box(ip.target().getPrice()), 4D);
 		ip.set(ip.box(ip.target().getWeight()), 6);
-		Home res = OrientDBObjectQuery.execute(ip, db);
-		Assert.assertNotNull(res);
+		boolean res = OrientDBObjectQuery.execute(ip, db);
+		Assert.assertTrue(res);
 	}
 
 	@Test
@@ -61,8 +61,8 @@ public class TestInsertQuery {
 		InsertQuery<Other> ip = new GenericInsertQuery<Other>(Other.class);
 		ip.set(ip.box(ip.target().getPrice()), 4D);
 		ip.set(ip.target().getText(), "aa");
-		Other res = OrientDBObjectQuery.execute(ip, db);
-		Assert.assertNotNull(res);
+		boolean res = OrientDBObjectQuery.execute(ip, db);
+		Assert.assertTrue(res);
 	}
 
 	@Test
