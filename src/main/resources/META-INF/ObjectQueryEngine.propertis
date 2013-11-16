@@ -1,0 +1,1 @@
+org.objectquery.QueryEngine = org.objectquery.orientdb.OrientDBQueryEngine
