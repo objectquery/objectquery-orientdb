@@ -232,8 +232,13 @@ public class OrientDBQueryGenerator {
 		return "";
 	}
 
-	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query, List<Join> joins, Stack<PathItem> parentItem) {
+	private void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query, List<Join> joins, Stack<PathItem> parentItem) {
 		StringBuilder builder = new StringBuilder();
+		buildQuery(clazz, query, joins, builder, parentItem);
+		this.query = builder.toString();
+	}
+
+	private void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query, List<Join> joins, StringBuilder builder, Stack<PathItem> parentItem) {
 		builder.append("select ");
 		boolean group = false;
 		List<Projection> groupby = new ArrayList<Projection>();
@@ -267,7 +272,7 @@ public class OrientDBQueryGenerator {
 			stringfyGroup(query, builder, parentItem);
 		}
 		if (!query.getHavings().isEmpty()) {
-			throw new ObjectQueryException("having clause was not supported by orientdb generator", null);
+			throw new ObjectQueryException("having clause is not supported by orientdb generator", null);
 		}
 		if (group && !groupby.isEmpty()) {
 			builder.append(" group by ");
@@ -299,7 +304,7 @@ public class OrientDBQueryGenerator {
 					builder.append(',');
 			}
 		}
-		this.query = builder.toString();
+
 	}
 
 	private void setPaths(Stack<PathItem> parentItem) {
@@ -316,6 +321,7 @@ public class OrientDBQueryGenerator {
 	}
 
 	private void generateSubquery(StringBuilder builder, GenericSelectQuery<?> goq, Stack<PathItem> parentItem) {
+		throw new ObjectQueryException("Unsupported subquery on orientdb implementation");
 		/*
 		parentItem.push(goq.getRootPathItem());
 		setPaths(parentItem);
@@ -325,7 +331,6 @@ public class OrientDBQueryGenerator {
 		parentItem.pop().setName("");
 		setPaths(parentItem);
 		*/
-		throw new ObjectQueryException("Unsupported subquery on orientdb implementation");
 	}
 
 	public Map<String, Object> getParameters() {

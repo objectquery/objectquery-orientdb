@@ -1,1 +1,2 @@
 org.objectquery.QueryEngine = org.objectquery.orientdb.OrientDBQueryEngine
+com.orientechnologies.orient.object.db.OObjectDatabaseTx = org.objectquery.orientdb.OrientDBQueryEngine
