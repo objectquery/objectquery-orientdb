@@ -2,9 +2,9 @@ package org.objectquery.orientdb;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.objectquery.BaseSelectQuery;
 import org.objectquery.SelectQuery;
 import org.objectquery.generic.GenericSelectQuery;
-import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.orientdb.domain.Person;
 
 public class TestSubQuery {
@@ -13,42 +13,38 @@ public class TestSubQuery {
 		return OrientDBObjectQuery.orientdbGenerator(query).getQuery();
 	}
 
-	@Test(expected=ObjectQueryException.class)
+	@Test()
 	public void testSubquerySimple() {
-		SelectQuery<Person> query = new GenericSelectQuery<Person>(Person.class);
+		SelectQuery<Person> query = new GenericSelectQuery<Person, Object>(Person.class);
 
-		SelectQuery<Person> subQuery = query.subQuery(Person.class);
+		BaseSelectQuery<Person> subQuery = query.subQuery(Person.class);
 		subQuery.eq(subQuery.target().getName(), "test");
 		query.eq(query.target().getDud(), subQuery);
 
-		Assert.assertEquals(
-				"select  from Person where dud  =  (select  from Person where name  =  :name)",
-				getQueryString(query));
+		Assert.assertEquals("select  from Person where dud  =  (select  from Person where name  =  :name)", getQueryString(query));
 
 	}
 
-	@Test(expected=ObjectQueryException.class)
+	@Test()
 	public void testBackReferenceSubquery() {
-		GenericSelectQuery<Person> query = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> query = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = query.target();
-		SelectQuery<Person> subQuery = query.subQuery(Person.class);
+		BaseSelectQuery<Person> subQuery = query.subQuery(Person.class);
 		subQuery.eq(subQuery.target().getName(), target.getDog().getName());
 		query.eq(query.target().getDud(), subQuery);
 
-		Assert.assertEquals(
-				"select  from Person where dud  =  (select  from Person where name  =  $current.parent.dog.name)",
-				getQueryString(query));
+		Assert.assertEquals("select  from Person where dud  =  (select  from Person where name  =  $current.parent.dog.name)", getQueryString(query));
 	}
 
-	@Test(expected=ObjectQueryException.class)
+	@Test()
 	public void testDoubleSubQuery() {
 
-		GenericSelectQuery<Person> query = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> query = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = query.target();
-		SelectQuery<Person> subQuery = query.subQuery(Person.class);
+		BaseSelectQuery<Person> subQuery = query.subQuery(Person.class);
 		query.eq(target.getDud(), subQuery);
 		subQuery.eq(subQuery.target().getName(), target.getDog().getName());
-		SelectQuery<Person> doubSubQuery = subQuery.subQuery(Person.class);
+		BaseSelectQuery<Person> doubSubQuery = subQuery.subQuery(Person.class);
 		subQuery.eq(subQuery.target().getMum(), doubSubQuery);
 
 		doubSubQuery.eq(doubSubQuery.target().getMum().getName(), subQuery.target().getMum().getName());
@@ -60,18 +56,16 @@ public class TestSubQuery {
 
 	}
 
-	@Test(expected=ObjectQueryException.class)
+	@Test()
 	public void testMultipleReferenceSubquery() {
-		GenericSelectQuery<Person> query = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> query = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = query.target();
-		SelectQuery<Person> subQuery = query.subQuery(Person.class);
-		SelectQuery<Person> subQuery1 = query.subQuery(Person.class);
+		BaseSelectQuery<Person> subQuery = query.subQuery(Person.class);
+		BaseSelectQuery<Person> subQuery1 = query.subQuery(Person.class);
 		query.eq(target.getDud(), subQuery);
 		query.eq(target.getMum(), subQuery1);
 
-		Assert.assertEquals(
-				"select  from Person where dud  =  (select  from Person) AND mum  =  (select  from Person)",
-				getQueryString(query));
+		Assert.assertEquals("select  from Person where dud  =  (select  from Person) AND mum  =  (select  from Person)", getQueryString(query));
 
 	}
 

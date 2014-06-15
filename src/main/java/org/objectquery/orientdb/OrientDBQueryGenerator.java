@@ -38,8 +38,8 @@ public class OrientDBQueryGenerator {
 			}
 			Stack<PathItem> items = new Stack<PathItem>();
 			items.push(baseQuery.getRootPathItem());
-			if (baseQuery instanceof GenericSelectQuery<?>)
-				buildQuery(baseQuery.getTargetClass(), builder1, ((GenericSelectQuery<?>) baseQuery).getJoins(), items);
+			if (baseQuery instanceof GenericSelectQuery<?,?>)
+				buildQuery(baseQuery.getTargetClass(), builder1, ((GenericSelectQuery<?,?>) baseQuery).getJoins(), items);
 			break;
 		case DELETE:
 			buildDelete(baseQuery.getTargetClass(), builder1, baseQuery.getRootPathItem());
@@ -199,8 +199,8 @@ public class OrientDBQueryGenerator {
 		sb.append(" ").append(getConditionType(cond.getType())).append(" ");
 		if (cond.getValue() instanceof PathItem) {
 			buildName((PathItem) cond.getValue(), sb);
-		} else if (cond.getValue() instanceof GenericSelectQuery<?>) {
-			generateSubquery(sb, (GenericSelectQuery<?>) cond.getValue(), parent);
+		} else if (cond.getValue() instanceof GenericSelectQuery<?,?>) {
+			generateSubquery(sb, (GenericSelectQuery<?,?>) cond.getValue(), parent);
 		} else {
 			sb.append(":");
 			sb.append(buildParameterName(cond, cond.getValue()));
@@ -255,7 +255,7 @@ public class OrientDBQueryGenerator {
 				if (proj.getItem() instanceof PathItem)
 					buildName((PathItem) proj.getItem(), builder);
 				else
-					generateSubquery(builder, (GenericSelectQuery<?>) proj.getItem(), parentItem);
+					generateSubquery(builder, (GenericSelectQuery<?,?>) proj.getItem(), parentItem);
 
 				if (proj.getType() != null)
 					builder.append(")");
@@ -282,7 +282,7 @@ public class OrientDBQueryGenerator {
 				if (proj.getItem() instanceof PathItem)
 					buildName((PathItem) proj.getItem(), builder);
 				else
-					generateSubquery(builder, (GenericSelectQuery<?>) proj.getItem(), parentItem);
+					generateSubquery(builder, (GenericSelectQuery<?,?>) proj.getItem(), parentItem);
 				if (projections.hasNext())
 					builder.append(",");
 			}
@@ -297,7 +297,7 @@ public class OrientDBQueryGenerator {
 				if (ord.getItem() instanceof PathItem)
 					buildName((PathItem) ord.getItem(), builder);
 				else
-					generateSubquery(builder, (GenericSelectQuery<?>) ord.getItem(), parentItem);
+					generateSubquery(builder, (GenericSelectQuery<?,?>) ord.getItem(), parentItem);
 				if (ord.getType() != null)
 					builder.append(" ").append(ord.getType());
 				if (orders.hasNext())
@@ -320,9 +320,7 @@ public class OrientDBQueryGenerator {
 		}
 	}
 
-	private void generateSubquery(StringBuilder builder, GenericSelectQuery<?> goq, Stack<PathItem> parentItem) {
-		throw new ObjectQueryException("Unsupported subquery on orientdb implementation");
-		/*
+	private void generateSubquery(StringBuilder builder, GenericSelectQuery<?,?> goq, Stack<PathItem> parentItem) {
 		parentItem.push(goq.getRootPathItem());
 		setPaths(parentItem);
 		builder.append("(");
@@ -330,7 +328,6 @@ public class OrientDBQueryGenerator {
 		builder.append(")");
 		parentItem.pop().setName("");
 		setPaths(parentItem);
-		*/
 	}
 
 	public Map<String, Object> getParameters() {

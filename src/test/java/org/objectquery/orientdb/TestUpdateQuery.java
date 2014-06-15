@@ -34,11 +34,11 @@ public class TestUpdateQuery {
 		other.setText("old-address");
 		db.save(other);
 
-		SelectQuery<Other> q = new GenericSelectQuery<Other>(Other.class);
+		SelectQuery<Other> q = new GenericSelectQuery<Other, Object>(Other.class);
 		q.eq(q.target().getText(), "old-address");
 		List<Other> ots = OrientDBObjectQuery.execute(q, db);
 		Assert.assertFalse(ots.isEmpty());
-		
+
 		UpdateQuery<Other> query = new GenericUpdateQuery<Other>(Other.class);
 		query.set(query.target().getText(), "new-address");
 		query.eq(query.target().getText(), "old-address");
@@ -55,7 +55,7 @@ public class TestUpdateQuery {
 		Assert.assertEquals("update Home set address = :address where address  =  :address1", q.getQuery());
 	}
 
-	@Test(expected=ObjectQueryException.class)
+	@Test(expected = ObjectQueryException.class)
 	public void testSimpleNestedUpdate() {
 		UpdateQuery<Person> query = new GenericUpdateQuery<Person>(Person.class);
 		query.set(query.target().getHome().getAddress(), "new-address");
@@ -63,7 +63,7 @@ public class TestUpdateQuery {
 		OrientDBObjectQuery.execute(query, db);
 	}
 
-	@Test(expected=ObjectQueryException.class)
+	@Test(expected = ObjectQueryException.class)
 	public void testSimpleNestedUpdateGen() {
 		UpdateQuery<Person> query = new GenericUpdateQuery<Person>(Person.class);
 		query.set(query.target().getHome().getAddress(), "new-address");

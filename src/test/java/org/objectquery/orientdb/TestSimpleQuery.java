@@ -18,7 +18,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testBaseCondition() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
 
@@ -29,7 +29,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testDupliedPath() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
 		qp.eq(target.getName(), "tom3");
@@ -41,7 +41,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testDottedPath() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getDog().getName(), "tom");
 		qp.eq(target.getDud().getName(), "tom3");
@@ -53,7 +53,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testProjection() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.prj(target.getName());
 		qp.eq(target.getDog().getName(), "tom");
@@ -65,7 +65,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testProjectionCountThis() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.prj(target, ProjectionType.COUNT);
 		qp.eq(target.getDog().getName(), "tom");
@@ -77,7 +77,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testSelectOrder() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName());
@@ -89,7 +89,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testOrderAsc() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName(), OrderType.ASC);
@@ -101,20 +101,21 @@ public class TestSimpleQuery {
 	@Test
 	public void testOrderDesc() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName(), OrderType.DESC);
 		qp.order(target.getDog().getName(), OrderType.DESC);
 
-		Assert.assertEquals("select  from Person where dog.name  =  :dogname order by name DESC,dog.name DESC", OrientDBObjectQuery.orientdbGenerator(qp).getQuery());
+		Assert.assertEquals("select  from Person where dog.name  =  :dogname order by name DESC,dog.name DESC", OrientDBObjectQuery.orientdbGenerator(qp)
+				.getQuery());
 
 	}
 
 	@Test(expected = ObjectQueryException.class)
 	public void testOrderGrouping() {
 
-		GenericSelectQuery<Home> qp = new GenericSelectQuery<Home>(Home.class);
+		SelectQuery<Home> qp = new GenericSelectQuery<Home, Object>(Home.class);
 		Home target = qp.target();
 		qp.eq(target.getAddress(), "homeless");
 		qp.order(qp.box(target.getPrice()), ProjectionType.COUNT, OrderType.ASC);
@@ -127,7 +128,7 @@ public class TestSimpleQuery {
 	@Test(expected = ObjectQueryException.class)
 	public void testOrderGroupingPrj() {
 
-		GenericSelectQuery<Home> qp = new GenericSelectQuery<Home>(Home.class);
+		SelectQuery<Home> qp = new GenericSelectQuery<Home, Object>(Home.class);
 		Home target = qp.target();
 		qp.prj(target.getAddress());
 		qp.prj(qp.box(target.getPrice()), ProjectionType.COUNT);
@@ -141,7 +142,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testAllSimpleConditions() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
 		qp.like(target.getName(), "tom");
@@ -160,7 +161,7 @@ public class TestSimpleQuery {
 	@Test()
 	public void testINCondition() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		List<String> pars = new ArrayList<String>();
 		qp.in(target.getName(), pars);
@@ -173,21 +174,21 @@ public class TestSimpleQuery {
 	@Test
 	public void testContainsCondition() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		Person p = new Person();
 		qp.contains(target.getFriends(), p);
 		qp.notContains(target.getFriends(), p);
 
-		Assert.assertEquals("select  from Person where friends  contains  :friends AND friends  not contains  :friends1",
-				OrientDBObjectQuery.orientdbGenerator(qp).getQuery());
+		Assert.assertEquals("select  from Person where friends  contains  :friends AND friends  not contains  :friends1", OrientDBObjectQuery
+				.orientdbGenerator(qp).getQuery());
 
 	}
 
 	@Test()
 	public void testProjectionGroup() {
 
-		SelectQuery<Home> qp = new GenericSelectQuery<Home>(Home.class);
+		SelectQuery<Home> qp = new GenericSelectQuery<Home, Object>(Home.class);
 		Home target = qp.target();
 		qp.prj(target.getAddress());
 		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
@@ -200,7 +201,7 @@ public class TestSimpleQuery {
 	@Test(expected = ObjectQueryException.class)
 	public void testProjectionGroupHaving() {
 
-		SelectQuery<Home> qp = new GenericSelectQuery<Home>(Home.class);
+		SelectQuery<Home> qp = new GenericSelectQuery<Home, Object>(Home.class);
 		Home target = qp.target();
 		qp.prj(target.getAddress());
 		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
@@ -215,7 +216,7 @@ public class TestSimpleQuery {
 	@Test(expected = ObjectQueryException.class)
 	public void testJoin() {
 
-		SelectQuery<Home> qp = new GenericSelectQuery<Home>(Home.class);
+		SelectQuery<Home> qp = new GenericSelectQuery<Home, Object>(Home.class);
 		qp.join(Person.class);
 		OrientDBObjectQuery.orientdbGenerator(qp);
 
@@ -223,7 +224,7 @@ public class TestSimpleQuery {
 
 	@Test
 	public void testBetweenCondition() {
-		SelectQuery<Home> qp = new GenericSelectQuery<Home>(Home.class);
+		SelectQuery<Home> qp = new GenericSelectQuery<Home, Object>(Home.class);
 		Home target = qp.target();
 		qp.between(qp.box(target.getPrice()), 20D, 30D);
 
