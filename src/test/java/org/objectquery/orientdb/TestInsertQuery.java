@@ -1,6 +1,7 @@
 package org.objectquery.orientdb;
 
-import junit.framework.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +36,7 @@ public class TestInsertQuery {
 		InsertQuery<Person> ip = new GenericInsertQuery<Person>(Person.class);
 		ip.set(ip.target().getName(), "test");
 		OrientDBQueryGenerator q = OrientDBObjectQuery.orientdbGenerator(ip);
-		Assert.assertEquals("insert into Person (name)values(:name)", q.getQuery());
+		assertEquals("insert into Person (name)values(:name)", q.getQuery());
 	}
 
 	@Test
@@ -44,7 +45,7 @@ public class TestInsertQuery {
 		ip.set(ip.box(ip.target().getPrice()), 4D);
 		ip.set(ip.box(ip.target().getWeight()), 6);
 		boolean res = OrientDBObjectQuery.execute(ip, db);
-		Assert.assertTrue(res);
+		assertTrue(res);
 	}
 
 	@Test
@@ -53,7 +54,7 @@ public class TestInsertQuery {
 		ip.set(ip.box(ip.target().getPrice()), 4D);
 		ip.set(ip.box(ip.target().getWeight()), 6);
 		OrientDBQueryGenerator q = OrientDBObjectQuery.orientdbGenerator(ip);
-		Assert.assertEquals("insert into Home (price,weight)values(:price,:weight)", q.getQuery());
+		assertEquals("insert into Home (price,weight)values(:price,:weight)", q.getQuery());
 	}
 
 	@Test
@@ -62,7 +63,7 @@ public class TestInsertQuery {
 		ip.set(ip.box(ip.target().getPrice()), 4D);
 		ip.set(ip.target().getText(), "aa");
 		boolean res = OrientDBObjectQuery.execute(ip, db);
-		Assert.assertTrue(res);
+		assertTrue(res);
 	}
 
 	@Test
@@ -70,7 +71,7 @@ public class TestInsertQuery {
 		InsertQuery<Person> ip = new GenericInsertQuery<Person>(Person.class);
 		ip.set(ip.target().getDud().getName(), "test");
 		OrientDBQueryGenerator q = OrientDBObjectQuery.orientdbGenerator(ip);
-		Assert.assertEquals("insert into Person (dud.name)values(:dudname)", q.getQuery());
+		assertEquals("insert into Person (dud.name)values(:dudname)", q.getQuery());
 	}
 
 	@After

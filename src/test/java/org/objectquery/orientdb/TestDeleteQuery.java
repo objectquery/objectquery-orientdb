@@ -1,6 +1,7 @@
 package org.objectquery.orientdb;
 
-import junit.framework.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,14 +30,14 @@ public class TestDeleteQuery {
 		db.save(ot);
 		DeleteQuery<Other> dq = new GenericeDeleteQuery<Other>(Other.class);
 		int deleted = OrientDBObjectQuery.execute(dq, db);
-		Assert.assertTrue(deleted != 0);
+		assertTrue(deleted != 0);
 	}
 
 	@Test
 	public void testSimpleDeleteGen() {
 		DeleteQuery<Person> dq = new GenericeDeleteQuery<Person>(Person.class);
 		OrientDBQueryGenerator q = OrientDBObjectQuery.orientdbGenerator(dq);
-		Assert.assertEquals("delete from Person ", q.getQuery());
+		assertEquals("delete from Person ", q.getQuery());
 	}
 
 	@Test
@@ -48,7 +49,7 @@ public class TestDeleteQuery {
 		DeleteQuery<Other> dq = new GenericeDeleteQuery<Other>(Other.class);
 		dq.eq(dq.target().getText(), "to-delete");
 		int deleted = OrientDBObjectQuery.execute(dq, db);
-		Assert.assertTrue(deleted != 0);
+		assertTrue(deleted != 0);
 	}
 
 	@Test
@@ -56,7 +57,7 @@ public class TestDeleteQuery {
 		DeleteQuery<Person> dq = new GenericeDeleteQuery<Person>(Person.class);
 		dq.eq(dq.target().getName(), "tom");
 		OrientDBQueryGenerator q = OrientDBObjectQuery.orientdbGenerator(dq);
-		Assert.assertEquals("delete from Person  where name  =  :name", q.getQuery());
+		assertEquals("delete from Person  where name  =  :name", q.getQuery());
 	}
 
 	@After

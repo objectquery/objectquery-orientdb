@@ -1,8 +1,9 @@
 package org.objectquery.orientdb;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-import junit.framework.Assert;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,13 +38,13 @@ public class TestUpdateQuery {
 		SelectQuery<Other> q = new GenericSelectQuery<Other, Object>(Other.class);
 		q.eq(q.target().getText(), "old-address");
 		List<Other> ots = OrientDBObjectQuery.execute(q, db);
-		Assert.assertFalse(ots.isEmpty());
+		assertFalse(ots.isEmpty());
 
 		UpdateQuery<Other> query = new GenericUpdateQuery<Other>(Other.class);
 		query.set(query.target().getText(), "new-address");
 		query.eq(query.target().getText(), "old-address");
 		int res = OrientDBObjectQuery.execute(query, db);
-		Assert.assertEquals(1, res);
+		assertEquals(1, res);
 	}
 
 	@Test
@@ -52,7 +53,7 @@ public class TestUpdateQuery {
 		query.set(query.target().getAddress(), "new-address");
 		query.eq(query.target().getAddress(), "old-address");
 		OrientDBQueryGenerator q = OrientDBObjectQuery.orientdbGenerator(query);
-		Assert.assertEquals("update Home set address = :address where address  =  :address1", q.getQuery());
+		assertEquals("update Home set address = :address where address  =  :address1", q.getQuery());
 	}
 
 	@Test(expected = ObjectQueryException.class)
@@ -70,7 +71,7 @@ public class TestUpdateQuery {
 		query.eq(query.target().getHome().getAddress(), "old-address");
 
 		OrientDBQueryGenerator q = OrientDBObjectQuery.orientdbGenerator(query);
-		Assert.assertEquals("update Person set home.address = :homeaddress where home.address  =  :homeaddress1", q.getQuery());
+		assertEquals("update Person set home.address = :homeaddress where home.address  =  :homeaddress1", q.getQuery());
 	}
 
 	@Test
@@ -84,7 +85,7 @@ public class TestUpdateQuery {
 		query.set(query.box(query.target().getPrice()), 1d);
 		query.eq(query.target().getText(), "2old-address");
 		int res = OrientDBObjectQuery.execute(query, db);
-		Assert.assertEquals(1, res);
+		assertEquals(1, res);
 	}
 
 	@Test
@@ -95,7 +96,7 @@ public class TestUpdateQuery {
 		query.eq(query.target().getAddress(), "old-address");
 
 		OrientDBQueryGenerator q = OrientDBObjectQuery.orientdbGenerator(query);
-		Assert.assertEquals("update Home set address = :address,price = :price where address  =  :address1", q.getQuery());
+		assertEquals("update Home set address = :address,price = :price where address  =  :address1", q.getQuery());
 	}
 
 	@After

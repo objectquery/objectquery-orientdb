@@ -1,13 +1,15 @@
 package org.objectquery.orientdb;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.objectquery.BaseSelectQuery;
 import org.objectquery.SelectQuery;
 import org.objectquery.generic.GenericSelectQuery;
+import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.orientdb.domain.Dog;
 import org.objectquery.orientdb.domain.Person;
 
@@ -23,7 +25,7 @@ public class TestPersistentSubQuery {
 		db.begin();
 	}
 
-	@Test()
+	@Test(expected = ObjectQueryException.class)
 	@SuppressWarnings("unchecked")
 	public void testSubquerySimple() {
 		SelectQuery<Person> query = new GenericSelectQuery<Person, Object>(Person.class);
@@ -33,11 +35,11 @@ public class TestPersistentSubQuery {
 		query.in(query.target().getDud(), subQuery);
 
 		List<Person> res = (List<Person>) OrientDBObjectQuery.execute(query, db);
-		Assert.assertEquals(1, res.size());
-		Assert.assertEquals(res.get(0).getName(), "tom");
+		assertEquals(1, res.size());
+		assertEquals(res.get(0).getName(), "tom");
 	}
 
-	@Test()
+	@Test(expected = ObjectQueryException.class)
 	@SuppressWarnings("unchecked")
 	public void testBackReferenceSubquery() {
 		GenericSelectQuery<Person, Object> query = new GenericSelectQuery<Person, Object>(Person.class);
@@ -48,11 +50,11 @@ public class TestPersistentSubQuery {
 		query.eq(query.target().getDud(), subQuery);
 
 		List<Person> res = (List<Person>) OrientDBObjectQuery.execute(query, db);
-		Assert.assertEquals(1, res.size());
-		Assert.assertEquals(res.get(0).getName(), "tom");
+		assertEquals(1, res.size());
+		assertEquals(res.get(0).getName(), "tom");
 	}
 
-	@Test()
+	@Test(expected = ObjectQueryException.class)
 	@SuppressWarnings("unchecked")
 	public void testDoubleSubQuery() {
 
@@ -68,12 +70,12 @@ public class TestPersistentSubQuery {
 		doubSubQuery.notEq(doubSubQuery.target().getOwner(), query.target().getMum());
 
 		List<Person> res = (List<Person>) OrientDBObjectQuery.execute(query, db);
-		Assert.assertEquals(1, res.size());
-		Assert.assertEquals(res.get(0).getName(), "tom");
+		assertEquals(1, res.size());
+		assertEquals(res.get(0).getName(), "tom");
 
 	}
 
-	@Test()
+	@Test(expected = ObjectQueryException.class)
 	@SuppressWarnings("unchecked")
 	public void testMultipleReferenceSubquery() {
 		GenericSelectQuery<Person, Object> query = new GenericSelectQuery<Person, Object>(Person.class);
@@ -86,8 +88,8 @@ public class TestPersistentSubQuery {
 		query.eq(target.getMum(), subQuery1);
 
 		List<Person> res = (List<Person>) OrientDBObjectQuery.execute(query, db);
-		Assert.assertEquals(1, res.size());
-		Assert.assertEquals(res.get(0).getName(), "tom");
+		assertEquals(1, res.size());
+		assertEquals(res.get(0).getName(), "tom");
 
 	}
 
