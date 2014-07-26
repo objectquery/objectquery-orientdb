@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.objectquery.BaseSelectQuery;
@@ -42,7 +43,7 @@ public class TestPersistentSubQuery {
 	@Test(expected = ObjectQueryException.class)
 	@SuppressWarnings("unchecked")
 	public void testBackReferenceSubquery() {
-		GenericSelectQuery<Person, Object> query = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> query = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = query.target();
 		BaseSelectQuery<Person> subQuery = query.subQuery(Person.class);
 		subQuery.eq(subQuery.target().getDog().getName(), target.getDog().getName());
@@ -58,7 +59,7 @@ public class TestPersistentSubQuery {
 	@SuppressWarnings("unchecked")
 	public void testDoubleSubQuery() {
 
-		GenericSelectQuery<Person, Object> query = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> query = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = query.target();
 		BaseSelectQuery<Person> subQuery = query.subQuery(Person.class);
 		query.eq(target.getDud(), subQuery);
@@ -78,7 +79,7 @@ public class TestPersistentSubQuery {
 	@Test(expected = ObjectQueryException.class)
 	@SuppressWarnings("unchecked")
 	public void testMultipleReferenceSubquery() {
-		GenericSelectQuery<Person, Object> query = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> query = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = query.target();
 		BaseSelectQuery<Person> subQuery = query.subQuery(Person.class);
 		subQuery.eq(subQuery.target().getName(), "tomdud");
@@ -91,6 +92,15 @@ public class TestPersistentSubQuery {
 		assertEquals(1, res.size());
 		assertEquals(res.get(0).getName(), "tom");
 
+	}
+
+	@After
+	public void afterTest() {
+		if (db != null) {
+			db.commit();
+			db.close();
+		}
+		db = null;
 	}
 
 }

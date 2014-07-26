@@ -259,6 +259,10 @@ public class OrientDBQueryGenerator {
 
 				if (proj.getType() != null)
 					builder.append(")");
+				if (proj.getMapper() != null) {
+					builder.append(" as ");
+					GenericInternalQueryBuilder.buildAlias(proj, builder);
+				}
 				if (projections.hasNext())
 					builder.append(",");
 			}

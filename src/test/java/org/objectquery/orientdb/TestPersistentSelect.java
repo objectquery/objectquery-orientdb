@@ -28,44 +28,40 @@ public class TestPersistentSelect {
 		db.begin();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testSimpleSelect() {
-		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
 
-		List<Person> res = (List<Person>) OrientDBObjectQuery.execute(qp, db);
+		List<Person> res = OrientDBObjectQuery.execute(qp, db);
 		assertEquals(1, res.size());
 		assertEquals(res.get(0).getName(), "tom");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testSimpleSelectWithutCond() {
-		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
-		List<Person> res = (List<Person>) OrientDBObjectQuery.execute(qp, db);
+		SelectQuery<Person> qp = new GenericSelectQuery<Person, Object>(Person.class);
+		List<Person> res = OrientDBObjectQuery.execute(qp, db);
 		assertEquals(3, res.size());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testSelectPathValue() {
-		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getDud().getHome(), target.getMum().getHome());
-		List<Person> res = (List<Person>) OrientDBObjectQuery.execute(qp, db);
+		List<Person> res = OrientDBObjectQuery.execute(qp, db);
 		assertEquals(1, res.size());
 		assertEquals(res.get(0).getDud().getHome(), res.get(0).getMum().getHome());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testSelectPathParam() {
-		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getDud().getName(), "tomdud");
-		List<Person> res = (List<Person>) OrientDBObjectQuery.execute(qp, db);
+		List<Person> res = OrientDBObjectQuery.execute(qp, db);
 		assertEquals(1, res.size());
 		assertEquals(res.get(0).getDud().getName(), "tomdud");
 	}
@@ -73,7 +69,7 @@ public class TestPersistentSelect {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSelectCountThis() {
-		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.prj(target, ProjectionType.COUNT);
 		List<ODocument> res = (List<ODocument>) OrientDBObjectQuery.execute(qp, db);
@@ -84,7 +80,7 @@ public class TestPersistentSelect {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSelectPrjection() {
-		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.prj(target.getName());
 		qp.prj(target.getHome());
@@ -98,7 +94,7 @@ public class TestPersistentSelect {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSelectOrder() {
-		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.prj(target.getName());
 		qp.order(target.getName());
@@ -112,7 +108,7 @@ public class TestPersistentSelect {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSelectOrderDesc() {
-		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.prj(target.getName());
 		qp.order(target.getName(), OrderType.DESC);
@@ -127,7 +123,7 @@ public class TestPersistentSelect {
 	@Test
 	public void testSelectSimpleConditions() {
 
-		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
 		qp.like(target.getName(), "tom");
@@ -145,7 +141,7 @@ public class TestPersistentSelect {
 	@Test()
 	public void testSelectINCondition() {
 
-		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 
 		List<String> pars = new ArrayList<String>();
@@ -161,7 +157,7 @@ public class TestPersistentSelect {
 	@Test()
 	public void testSelectContainsCondition() {
 
-		GenericSelectQuery<Person, Object> qp0 = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> qp0 = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target0 = qp0.target();
 		qp0.eq(target0.getName(), "tom");
 
@@ -169,7 +165,7 @@ public class TestPersistentSelect {
 		assertEquals(1, res0.size());
 		Person p = res0.get(0);
 
-		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
+		SelectQuery<Person> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.contains(target.getFriends(), p);
 		qp.notContains(target.getFriends(), p);

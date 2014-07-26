@@ -14,7 +14,7 @@ import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
 public class OrientDBQueryEngine extends QueryEngine<OObjectDatabaseTx> {
 
 	@Override
-	public <RET extends List<?>> RET execute(SelectQuery<?> query, OObjectDatabaseTx engineSession) {
+	public List<?> execute(SelectQuery<?> query, OObjectDatabaseTx engineSession) {
 		return OrientDBObjectQuery.execute(query, engineSession);
 	}
 
@@ -34,8 +34,7 @@ public class OrientDBQueryEngine extends QueryEngine<OObjectDatabaseTx> {
 	}
 
 	@Override
-	public <RET extends List<M>, M> RET execute(SelectMapQuery<?, M> query, OObjectDatabaseTx engineSession) {
-		// TODO Auto-generated method stub
-		return null;
+	public <M> List<M> execute(SelectMapQuery<?, M> query, OObjectDatabaseTx engineSession) {
+		return OrientDBObjectQuery.execute(query, engineSession);
 	}
 }
